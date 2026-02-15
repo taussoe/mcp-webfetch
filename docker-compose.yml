@@ -1,0 +1,31 @@
+services:
+  searxng:
+    image: searxng/searxng:latest
+    container_name: mcp-searxng
+    restart: unless-stopped
+    volumes:
+      - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
+      - ./searxng/limiter.toml:/etc/searxng/limiter.toml:ro
+    environment:
+      - SEARXNG_BASE_URL=http://localhost:8080/
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  mcp-webfetch:
+    build: .
+    container_name: mcp-webfetch
+    restart: unless-stopped
+    ports:
+      - "3099:3099"
+    depends_on:
+      searxng:
+        condition: service_healthy
+    environment:
+      - PORT=3099
+      - SEARXNG_URL=http://searxng:8080
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules

@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "mcp-webfetch": {
+      "url": "http://localhost:3099/mcp"
+    }
+  }
+}

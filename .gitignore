@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+logs.txt
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Playwright browsers and cache
+.playwright/
+playwright/.cache/
+playwright/.local-storage/
+
+# Docker build artifacts
+docker-compose.override.yml
+
+# SearXNG data and cache
+searxng/data/
+searxng/result_cache.db
+searxng/*.secret.yml
+
+# Production build
+dist/
+build/
+*.tsbuildinfo
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Environment examples (optional)
+.env.example

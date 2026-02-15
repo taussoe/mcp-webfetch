@@ -1,0 +1,52 @@
+use_default_settings: true
+
+general:
+  instance_name: "MCP Search SearXNG"
+  debug: false
+
+search:
+  safe_search: 0
+  default_lang: "en"
+  formats:
+    - html
+    - json
+
+server:
+  secret_key: "mcp-webfetch-local-only"
+  bind_address: "0.0.0.0"
+  port: 8080
+  limiter: false
+
+ui:
+  static_use_hash: true
+
+engines:
+  - name: duckduckgo
+    engine: duckduckgo
+    disabled: false
+    weight: 2
+
+  - name: bing
+    engine: bing
+    disabled: false
+    weight: 1.5
+
+  - name: brave
+    engine: brave
+    disabled: false
+    weight: 1.5
+
+  - name: wikipedia
+    engine: wikipedia
+    disabled: false
+    weight: 1
+
+  - name: wikidata
+    engine: wikidata
+    disabled: false
+    weight: 0.5
+
+  # Disable Google - CAPTCHA issues in containers
+  - name: google
+    engine: google
+    disabled: true
