@@ -191,7 +191,7 @@ async function extractContent(page) {
 // Page Reading
 // ====================
 
-async function readPage(url, { maxContentLength = 5000 } = {}) {
+async function readPage(url, { maxContentLength = 5000, headingsOnly = false } = {}) {
   const b = await getBrowser();
   const context = await b.newContext({
     userAgent: USER_AGENT,
@@ -254,6 +254,16 @@ async function readPage(url, { maxContentLength = 5000 } = {}) {
     } catch {}
 
     const extracted = await extractContent(page);
+
+    if (headingsOnly) {
+      return {
+        success: true,
+        url: extracted.url,
+        title: extracted.title,
+        headings: extracted.headings,
+      };
+    }
+
     if (maxContentLength && extracted.fullContent) {
       extracted.fullContent = extracted.fullContent.substring(0, maxContentLength);
     }
@@ -307,13 +317,14 @@ Do not wait for the user to explicitly ask you to search or read. If answering w
   });
 
   server.registerTool('read_page', {
-    description: 'Read and extract the full content of a webpage. Use this when you have a URL and need to understand its content — for summarizing articles, extracting data, answering questions about a specific page, or following up on search results. Returns title, headings, paragraphs, links, and full text.',
+    description: 'Read and extract the content of a webpage. Use this when you have a URL and need to understand its content — for summarizing articles, extracting data, answering questions about a specific page, or following up on search results. Returns title, headings, paragraphs, links, and full text. Use headings_only=true to get a table of contents first, then read specific sections.',
     inputSchema: {
       url: z.string().describe('URL of the webpage to read'),
       maxContentLength: z.number().optional().default(5000).describe('Max content length in characters'),
+      headings_only: z.boolean().optional().default(false).describe('If true, return only the page title and headings (H1-H3) as a table of contents — useful for previewing long pages before reading full content'),
     },
-  }, async ({ url, maxContentLength }) => {
-    const result = await readPage(url, { maxContentLength });
+  }, async ({ url, maxContentLength, headings_only }) => {
+    const result = await readPage(url, { maxContentLength, headingsOnly: headings_only });
     return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
   });
 
@@ -360,9 +371,9 @@ app.post('/search', async (req, res) => {
 
 app.post('/read', async (req, res) => {
   try {
-    const { url, maxContentLength = 5000 } = req.body;
+    const { url, maxContentLength = 5000, headings_only = false } = req.body;
     if (!url) return res.status(400).json({ error: 'Missing url parameter' });
-    const result = await readPage(url, { maxContentLength });
+    const result = await readPage(url, { maxContentLength, headingsOnly: headings_only });
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
