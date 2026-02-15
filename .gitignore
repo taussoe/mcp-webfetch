@@ -45,6 +45,3 @@ build/
 # OS files
 Thumbs.db
 .DS_Store
-
-# Environment examples (optional)
-.env.example
